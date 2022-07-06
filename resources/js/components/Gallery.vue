@@ -21,7 +21,7 @@
           <component :is="singleComponent" class="mb-3 p-3 mr-3"
                      :key="index" :image="element" :field="field" :editable="editable" :removable="removable || editable" @remove="remove(index)"
                      :is-custom-properties-editable="customProperties && customPropertiesFields.length > 0"
-                     @edit-custom-properties="customPropertiesImageIndex = index"
+                     @edit-custom-properties="() => editCustomProperties(index)"
                      @crop-start="cropImageQueue.push($event)"
           />
 
@@ -142,6 +142,11 @@ export default {
     },
     remove(index) {
       this.images = this.images.filter((value, i) => i !== index);
+    },
+
+    editCustomProperties(index) {
+      this.$emit('edit-custom-properties', index);
+      // this.customPropertiesImageIndex = index;
     },
 
     onCroppedImage(image) {

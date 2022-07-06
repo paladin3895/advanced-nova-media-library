@@ -2,9 +2,19 @@
   <component :is="field.fullSize ? 'FullWidthField' : 'DefaultField'" :field="field" :errors="errors" :show-help-text="showHelpText">
     <template #field>
       <div :class="{'px-8 pt-6': field.fullSize}">
-        <gallery slot="value" ref="gallery" v-if="hasSetInitialValue"
-                 v-model="value" :editable="!field.readonly" :removable="field.removable" custom-properties :field="field" :multiple="field.multiple" :uploads-to-vapor="field.uploadsToVapor"
-                 :has-error="hasError" :first-error="firstError"/>
+        <gallery v-if="hasSetInitialValue"
+          slot="value"
+          ref="gallery"
+          v-model="value"
+          @edit-custom-properties="editCustomProperties"
+          custom-properties
+          :editable="!field.readonly"
+          :removable="field.removable"
+          :field="field"
+          :multiple="field.multiple"
+          :uploads-to-vapor="field.uploadsToVapor"
+          :has-error="hasError"
+          :first-error="firstError"/>
 
         <div v-if="field.existingMedia">
           <OutlineButton type="button" class="mt-2" @click.prevent="existingMediaOpen = true">
@@ -59,6 +69,14 @@ export default {
       }
 
       return this.__(`Use Existing ${type}`);
+    }
+  },
+  watch: {
+    value: {
+      handler(newVal) {
+        this.$emit('change', newVal)
+      },
+      deep: true,
     }
   },
   methods: {
@@ -125,6 +143,11 @@ export default {
      */
     handleChange(value) {
       this.value = value
+    },
+
+    editCustomProperties(index) {
+      let item = this.value[index]
+      this.$emit('edit-custom-properties', item)
     },
 
     addExistingItem(item) {
